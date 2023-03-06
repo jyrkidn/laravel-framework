@@ -1,7 +1,10 @@
 {
     "name": "laravel/framework",
     "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "keywords": [
+        "framework",
+        "laravel"
+    ],
     "license": "MIT",
     "homepage": "https://laravel.com",
     "support": {
@@ -94,6 +97,7 @@
         "ext-gmp": "*",
         "ably/ably-php": "^1.0",
         "aws/aws-sdk-php": "^3.235.5",
+        "codedor/facade-docblock-generator": "dev-master",
         "doctrine/dbal": "^3.5.1",
         "fakerphp/faker": "^1.21",
         "guzzlehttp/guzzle": "^7.5",
@@ -192,5 +196,11 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "git",
+            "url": "git@github.com:codedor/facade-docblock-generator.git"
+        }
+    ]
 }
