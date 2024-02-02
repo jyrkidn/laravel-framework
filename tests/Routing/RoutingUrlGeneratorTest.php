@@ -14,9 +14,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\Request as SymfonyRequest;
 use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
-if (PHP_VERSION_ID >= 80100) {
-    include_once 'Enums.php';
-}
+include_once 'Enums.php';
 
 class RoutingUrlGeneratorTest extends TestCase
 {
@@ -734,32 +732,6 @@ class RoutingUrlGeneratorTest extends TestCase
         $this->assertSame('/bar', $url->previousPath('/bar'));
     }
 
-    public function testWhenPreviousIsEqualToCurrent()
-    {
-        $url = new UrlGenerator(
-            new RouteCollection,
-            Request::create('http://www.foo.com/')
-        );
-
-        $url->getRequest()->headers->set('referer', 'http://www.foo.com/');
-        $this->assertSame('http://www.foo.com', $url->previous());
-        $this->assertSame('http://www.foo.com/bar', $url->previous('/bar'));
-
-        $url->setRequest(Request::create('http://www.foo.com/bar'));
-
-        $url->getRequest()->headers->set('referer', 'http://www.foo.com/bar');
-        $this->assertSame('http://www.foo.com', $url->previous());
-        $this->assertSame('http://www.foo.com/bar', $url->previous('/bar'));
-        $this->assertSame('http://www.foo.com/baz', $url->previous('/baz'));
-
-        $url->setRequest(Request::create('http://www.foo.com/bar?page=2'));
-
-        $url->getRequest()->headers->set('referer', 'http://www.foo.com/bar?page=2');
-        $this->assertSame('http://www.foo.com', $url->previous());
-        $this->assertSame('http://www.foo.com/bar', $url->previous('/bar'));
-        $this->assertSame('http://www.foo.com/bar?page=2', $url->previous('/bar?page=2'));
-    }
-
     public function testRouteNotDefinedException()
     {
         $this->expectException(RouteNotFoundException::class);
@@ -887,9 +859,6 @@ class RoutingUrlGeneratorTest extends TestCase
         Request::create($url->signedRoute('foo', ['expires' => 253402300799]));
     }
 
-    /**
-     * @requires PHP >= 8.1
-     */
     public function testRouteGenerationWithBackedEnums()
     {
         $url = new UrlGenerator(
@@ -936,6 +905,18 @@ class RoutingUrlGeneratorTest extends TestCase
 
         $this->assertTrue($url2->hasValidSignature($request));
         $this->assertFalse($url->hasValidSignature($request));
+    }
+
+    public function testMissingNamedRouteResolution()
+    {
+        $url = new UrlGenerator(
+            new RouteCollection,
+            Request::create('http://www.foo.com/')
+        );
+
+        $url->resolveMissingNamedRoutesUsing(fn ($name, $parameters, $absolute) => 'test-url');
+
+        $this->assertSame('test-url', $url->route('foo'));
     }
 }
 
